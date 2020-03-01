@@ -68,9 +68,44 @@ const Typeahead = props => {
     }
   };
   const sugg = suggestions[inputValue];
+  const onKeyDown = e => {
+    if (sugg) {
+      let selectedIndex = sugg.rows.indexOf(sugg.selected);
+      let newSelectedIndex = selectedIndex;
+      if (e.keyCode === 38 || e.key === "ArrowUp") {
+        newSelectedIndex -= 1;
+        if (newSelectedIndex < 0) {
+          newSelectedIndex = sugg.rows.length - 1;
+        }
+      }
+      if (e.keyCode === 40 || e.key === "ArrowDown") {
+        newSelectedIndex += 1;
+        if (newSelectedIndex > sugg.rows.length - 1) {
+          newSelectedIndex = 0;
+        }
+      }
+      if (e.keyCode === 36 || e.key === "Home") {
+        newSelectedIndex = 0;
+      }
+      if (e.keyCode === 35 || e.key === "End") {
+        newSelectedIndex = sugg.rows.length - 1;
+      }
+      if (newSelectedIndex !== selectedIndex) {
+        setSuggestions(v => {
+          return {
+            ...v,
+            [inputValue]: {
+              rows: sugg.rows,
+              selected: sugg.rows[newSelectedIndex]
+            }
+          };
+        });
+      }
+    }
+  };
   return (
     <div>
-      <input value={inputValue} onChange={onChange} />
+      <input value={inputValue} onChange={onChange} onKeyDown={onKeyDown} />
       {sugg ? (
         <div style={{ position: "relative" }}>
           <div className="suggestions">
