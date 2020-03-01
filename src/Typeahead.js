@@ -38,10 +38,20 @@ const Typeahead = props => {
               if (result.work.length) {
                 // is this an array?
                 // use the titleAuth as display
-                foundSuggestions = result.work.map(v => v.titleAuth);
+                result.work.forEach(v => {
+                  v.display = v.titleAuth;
+                });
+                foundSuggestions = {
+                  selected: result.work[0],
+                  rows: result.work
+                };
               } else if (result.work.titleAuth) {
                 // or a single item
-                foundSuggestions = [result.work.titleAuth];
+                result.work.display = result.work.titleAuth;
+                foundSuggestions = {
+                  selected: result.work,
+                  rows: [result.work]
+                };
               }
               if (foundSuggestions) {
                 setSuggestions(v => ({ ...v, [value]: foundSuggestions }));
@@ -57,18 +67,21 @@ const Typeahead = props => {
       }
     }
   };
+  const sugg = suggestions[inputValue];
   return (
     <div>
       <input value={inputValue} onChange={onChange} />
-      {suggestions[inputValue] ? (
+      {sugg ? (
         <div style={{ position: "relative" }}>
           <div className="suggestions">
-            {suggestions[inputValue].map((s, i) => (
+            {sugg.rows.map((s, i) => (
               <div
-                className={i === 0 ? "suggestion selected" : "suggestion"}
+                className={
+                  s === sugg.selected ? "suggestion selected" : "suggestion"
+                }
                 key={i}
               >
-                {s}
+                {s.display}
               </div>
             ))}
           </div>
