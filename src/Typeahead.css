@@ -1,0 +1,25 @@
+.suggestions {
+  position: absolute;
+  background-color: white;
+  z-index: 2;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 0;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+}
+.suggestion {
+  cursor: pointer;
+  font-size: 12px;
+  white-space: nowrap;
+  padding: 2px 4px;
+  border-bottom: 1px solid #ddd;
+}
+.suggestion:hover:not(.selected) {
+  background-color: #d0ff90;
+}
+.suggestion:nth-child(odd):not(.selected):not(:hover) {
+  background-color: #f5f6f9;
+}
+.selected {
+  background-color: #90d0ff;
+}

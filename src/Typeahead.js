@@ -1,3 +1,4 @@
+import "./Typeahead.css";
 import React, { useState } from "react";
 const Typeahead = props => {
   const [inputValue, setInputValue] = useState("");
@@ -59,9 +60,20 @@ const Typeahead = props => {
   return (
     <div>
       <input value={inputValue} onChange={onChange} />
-      {suggestions[inputValue]
-        ? suggestions[inputValue].map((s, i) => <div key={i}>{s}</div>)
-        : null}
+      {suggestions[inputValue] ? (
+        <div style={{ position: "relative" }}>
+          <div className="suggestions">
+            {suggestions[inputValue].map((s, i) => (
+              <div
+                className={i === 0 ? "suggestion selected" : "suggestion"}
+                key={i}
+              >
+                {s}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
