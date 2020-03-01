@@ -103,9 +103,20 @@ const Typeahead = props => {
       }
     }
   };
+  const onBlur = () => {
+    if (sugg) {
+      setInputValue(sugg.selected.display);
+    }
+    setSuggestions({});
+  };
   return (
     <div>
-      <input value={inputValue} onChange={onChange} onKeyDown={onKeyDown} />
+      <input
+        value={inputValue}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        onBlur={onBlur}
+      />
       {sugg ? (
         <div style={{ position: "relative" }}>
           <div className="suggestions">
