@@ -1,8 +1,9 @@
 import "./Typeahead.css";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 const Typeahead = props => {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState({});
+  const ignoreBlurRef = useRef(false);
   const onChange = e => {
     const value = e.target.value;
     setInputValue(value);
@@ -69,6 +70,10 @@ const Typeahead = props => {
   };
   const sugg = suggestions[inputValue];
   const onKeyDown = e => {
+    if (e.keyCode === 9 || e.key === "Tab") {
+      ignoreBlurRef.current = false;
+      return;
+    }
     if (sugg) {
       let selectedIndex = sugg.rows.indexOf(sugg.selected);
       let newSelectedIndex = selectedIndex;
@@ -104,6 +109,9 @@ const Typeahead = props => {
     }
   };
   const onBlur = () => {
+    if (ignoreBlurRef.current) {
+      return;
+    }
     if (sugg) {
       setInputValue(sugg.selected.display);
     }
@@ -126,6 +134,16 @@ const Typeahead = props => {
                   s === sugg.selected ? "suggestion selected" : "suggestion"
                 }
                 key={i}
+                onMouseEnter={() => {
+                  ignoreBlurRef.current = true;
+                }}
+                onMouseLeave={() => {
+                  ignoreBlurRef.current = false;
+                }}
+                onClick={() => {
+                  setInputValue(s.display);
+                  setSuggestions({});
+                }}
               >
                 {s.display}
               </div>
