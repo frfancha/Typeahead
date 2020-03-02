@@ -1,5 +1,24 @@
 import "./Typeahead.css";
 import React, { useState, useRef, useEffect } from "react";
+const highlight = (display, search) => {
+  const f = [];
+  let j = -1;
+  let i = display.toUpperCase().indexOf(search.toUpperCase());
+  while (j < display.length) {
+    if (i === -1) {
+      f.push(<span key={j + 1}>{display.slice(j + 1)}</span>);
+      j = display.length;
+    } else {
+      if (i > j + 1) {
+        f.push(<span key={j + 1}>{display.slice(j + 1, i)}</span>);
+      }
+      f.push(<b key={i}>{display.slice(i, i + search.length)}</b>);
+      j = i + search.length - 1;
+      i = display.toUpperCase().indexOf(search.toUpperCase(), j + 1);
+    }
+  }
+  return f;
+};
 const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
   const abortControllerRef = useRef();
   if (!abortControllerRef.current) {
@@ -39,6 +58,7 @@ const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
             if (rows) {
               rows.forEach(v => {
                 v.display = suggestion2display(v);
+                v.html = highlight(v.display, value);
               });
               setSuggestions(v => ({
                 ...v,
@@ -149,7 +169,7 @@ const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
                   setSuggestions({});
                 }}
               >
-                {s.display}
+                {s.html}
               </div>
             ))}
           </div>
