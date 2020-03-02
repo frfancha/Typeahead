@@ -1,6 +1,16 @@
 import "./Typeahead.css";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
+  const abortControllerRef = useRef();
+  if (!abortControllerRef.current) {
+    abortControllerRef.current = new AbortController();
+  }
+  useEffect(
+    () => () => {
+      abortControllerRef.current.abort();
+    },
+    []
+  );
   const [changed, setChanged] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState({});
@@ -19,6 +29,7 @@ const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
           let query = search2url(value);
           try {
             const fetchResult = await fetch(query, {
+              signal: abortControllerRef.current.signal,
               headers: {
                 Accept: "application/json"
               }
@@ -35,6 +46,10 @@ const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
               }));
             }
           } catch (err) {
+            if (err.name === "AbortError") {
+              console.log(value + " Request was canceled via controller.abort");
+              return;
+            }
             // handle other errors here
             console.error(err);
             return;
@@ -85,6 +100,8 @@ const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
     }
   };
   const onBlur = () => {
+    abortControllerRef.current.abort();
+    abortControllerRef.current = new AbortController();
     if (ignoreBlurRef.current) {
       return;
     }
