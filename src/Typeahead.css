@@ -23,3 +23,6 @@
 .selected {
   background-color: #90d0ff;
 }
+.error {
+  border: 2px solid red;
+}

@@ -1,10 +1,13 @@
 import "./Typeahead.css";
 import React, { useState, useRef } from "react";
 const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
+  const [changed, setChanged] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState({});
+  const [error, setError] = useState(false);
   const ignoreBlurRef = useRef(false);
   const onChange = e => {
+    setChanged(true);
     const value = e.target.value;
     setInputValue(value);
     if (value) {
@@ -87,8 +90,16 @@ const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
     }
     if (sugg) {
       setInputValue(sugg.selected.display);
+      setChanged(false);
+    } else {
+      if (inputValue && changed) {
+        setError(true);
+      }
     }
     setSuggestions({});
+  };
+  const onFocus = () => {
+    setError(false);
   };
   return (
     <div>
@@ -96,7 +107,9 @@ const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
         value={inputValue}
         onChange={onChange}
         onKeyDown={onKeyDown}
+        onFocus={onFocus}
         onBlur={onBlur}
+        className={error ? "error" : null}
       />
       {sugg ? (
         <div style={{ position: "relative" }}>
@@ -115,6 +128,7 @@ const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
                 }}
                 onClick={() => {
                   setInputValue(s.display);
+                  setChanged(false);
                   setSuggestions({});
                 }}
               >
