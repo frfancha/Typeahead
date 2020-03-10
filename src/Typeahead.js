@@ -20,12 +20,14 @@ const highlight = (display, search) => {
   return f;
 };
 const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
+  const hasFocusRef = useRef(false);
   const abortControllerRef = useRef();
   if (!abortControllerRef.current) {
     abortControllerRef.current = new AbortController();
   }
   useEffect(
     () => () => {
+      hasFocusRef.current = false;
       abortControllerRef.current.abort();
     },
     []
@@ -54,6 +56,9 @@ const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
               }
             });
             const result = await fetchResult.json();
+            if (!hasFocusRef.current) {
+              return;
+            }
             const rows = result2suggestions(result);
             if (rows) {
               rows.forEach(v => {
@@ -120,6 +125,7 @@ const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
     }
   };
   const onBlur = () => {
+    hasFocusRef.current = false;
     abortControllerRef.current.abort();
     abortControllerRef.current = new AbortController();
     if (ignoreBlurRef.current) {
@@ -136,6 +142,7 @@ const Typeahead = ({ search2url, result2suggestions, suggestion2display }) => {
     setSuggestions({});
   };
   const onFocus = () => {
+    hasFocusRef.current = true;
     setError(false);
   };
   return (
